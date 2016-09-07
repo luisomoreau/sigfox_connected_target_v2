@@ -44,12 +44,14 @@ uint8_t data[8];
 bool blue = false;
 bool sigfoxOK = false;
 bool trigger = false; 
-int downlinkCounter = 0;
+int downlinkCounter;
 int points = 0;
 int count = 0;
-
+//Only if you want some info on the Atim module
+/*
 uint8_t rev;
 armType_t armType;
+*/
 
 
 // ---------------------------------------------------------------------
@@ -83,7 +85,7 @@ void setup()
       digitalWrite(GREEN, HIGH);
       delay(1000);
       resetLeds();
-      SigFox.Info(&armType, &rev, 0, 0, 0);
+      //SigFox.Info(&armType, &rev, 0, 0, 0);
       sigfoxOK=true; 
       SigFox.SetMode(ARM_MODE_SFX);
       //Set Sigfox mode in uplink.
@@ -99,6 +101,8 @@ void setup()
       SigFox.UpdateConfig();
   	}
   }
+  points = 0;
+  count = 0;
   delay(1000);
   resetLeds();
   attachInterrupt(1, wakeUpNow, RISING);
@@ -159,7 +163,7 @@ void sendMessage(){
   if(sigfoxOK){    
       unsigned int i;
       digitalWrite(BLUE, HIGH);
-      msg[0] = board.batteryChk() * 10; 
+      msg[0] = board.batteryChk() * 10; //We multiply the battery result by 10 so that it is easier to fill it in a byte as an integer. It should be between 2,9 and 4,2V thus 29 and 42
       msg[1] = points;
       //Only if you want to check the software revision
       /*
@@ -178,8 +182,7 @@ void sendMessage(){
           digitalWrite(RED, HIGH);
         }*/
       }
-      resetLeds();
-      digitalWrite(GREEN, HIGH);   
+      resetLeds();  
     }else{
       digitalWrite(RED, HIGH);
     } 
